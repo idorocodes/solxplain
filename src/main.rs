@@ -1,57 +1,52 @@
-use clap::{Parser,Subcommand};
-mod solana;
+use clap::{Parser, Subcommand};
+mod account;
+use account::*;
+mod transaction;
+use transaction::*;
 
 
 #[derive(Debug, Parser)]
 #[command(author, version, about, long_about = None)]
-struct CliCommand{
+struct CliCommand {
     #[command(subcommand)]
-    command : Commands,
+    command: Commands,
     #[arg(long, global = true)]
-    cluster : Option<String>
+    cluster: Option<String>,
 }
 
 #[derive(Debug, Subcommand)]
-enum Commands{
-    Tx{
-        signature : String
-    },
-    Account {
-        pubkey : String
-    }
+enum Commands {
+    Tx { signature: String },
+    Account { pubkey: String },
 }
 
-#[derive(Debug,Clone)]
+#[derive(Debug, Clone)]
 enum Cluster {
     Mainnet,
     Testnet,
-    Devnet
+    Devnet,
 }
 
-
 impl Cluster {
-    fn set_rpc (&self) -> &'static str{
+    fn set_rpc(&self) -> &'static str {
         match self {
             Cluster::Mainnet => "https://api.mainnet-beta.solana.com",
             Cluster::Devnet => "https://api.devnet.solana.com",
-            Cluster::Testnet => "https://api.testnet.solana.com"
-        } 
+            Cluster::Testnet => "https://api.testnet.solana.com",
+        }
     }
     fn detect_cluster(cli_cluster: Option<String>) -> Cluster {
         match cli_cluster.as_deref() {
-            Some("devnet")  => Cluster::Devnet,
+            Some("devnet") => Cluster::Devnet,
             Some("testnet") => Cluster::Testnet,
             Some("mainnet") => Cluster::Mainnet,
-            _               => Cluster::Mainnet,
+            _ => Cluster::Mainnet,
         }
     }
 }
 
-  
-
-    
-    
-fn main() {
+#[tokio::main]
+async fn main() -> Result<(), anyhow::Error> {
     let args = CliCommand::parse();
 
     let cluster_hint = args.cluster;
@@ -60,13 +55,7 @@ fn main() {
     println!("cluster: {}", cluster);
 
     match args.command {
-        Commands::Tx { signature } => {
-            println!("Get Tx: {}", signature);
-        }
-        Commands::Account { pubkey } => {
-            println!("Get Account: {}", pubkey);
-        }
+        Commands::Tx { signature } => transaction(cluster, signature).await,
+        Commands::Account { pubkey } => account(cluster, pubkey).await,
     }
 }
-
-

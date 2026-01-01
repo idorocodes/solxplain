@@ -2,6 +2,16 @@
 name = "solxplain"
 version = "0.1.0"
 edition = "2024"
+authors = ["John Amos idoroyen33@gmail.com"]
+license = "MIT OR Apache-2.0"
+description = "A cli tool to view solana accounts and tx logs like the explorer"
+readme = "README.md"
+homepage = "https://github.com/idorocodes/solxplain"
+repository = "https://github.com/idorocodes/solxplain"
+keywords = ["cli", "solana", "accounts", "transaction"]
+categories = ["command-line-utilities"]
+
+
 
 [dependencies]
 anyhow = "1.0.100"
