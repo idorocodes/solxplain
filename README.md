@@ -2,7 +2,7 @@
 
 # solxplain
 
-**solxplain** is a Rust-based CLI tool for inspecting Solana accounts and transactions, turning raw RPC responses and execution logs into **structured, human-readable output**.
+**solxplain** is a Rust-based CLI tool for inspecting Solana accounts and transactions, turning raw RPC responses and execution logs into **human-readable output**.
 
 
 
