@@ -24,50 +24,49 @@ enum Commands{
 #[derive(Debug,Clone)]
 enum Cluster {
     Mainnet,
-    TestNet,
+    Testnet,
     Devnet
 }
 
 
 impl Cluster {
-    fn set_rpc (self) -> &'static str{
+    fn set_rpc (&self) -> &'static str{
         match self {
             Cluster::Mainnet => "https://api.mainnet-beta.solana.com",
-            Cluster::Devnet => "https://api.devnet-beta.solana.com",
-            Cluster::TestNet => "https://api.testnet-beta.solana.com"
+            Cluster::Devnet => "https://api.devnet.solana.com",
+            Cluster::Testnet => "https://api.testnet.solana.com"
         } 
     }
+    fn detect_cluster(cli_cluster: Option<String>) -> Cluster {
+        match cli_cluster.as_deref() {
+            Some("devnet")  => Cluster::Devnet,
+            Some("testnet") => Cluster::Testnet,
+            Some("mainnet") => Cluster::Mainnet,
+            _               => Cluster::Mainnet,
+        }
+    }
 }
 
-fn detect_cluster (cli_cluster : Option<String>) -> Cluster{
+  
+
     
-    if let Some(cluster) = cli_cluster{
-        return match cluster.as_str() {
-            "devnet" => Cluster::Devnet,
-            "testnet" => Cluster::TestNet,
-            "mainnet" => Cluster::Mainnet,
-             _ => Cluster::Devnet
-        };
-    }
-    else {
-        Cluster::Mainnet
-    }
-}
-
-fn main () {
+    
+fn main() {
     let args = CliCommand::parse();
-    
-    let rpc_url = args.cluster;
-    
+
+    let cluster_hint = args.cluster;
+    let cluster = Cluster::detect_cluster(cluster_hint).set_rpc();
+
+    println!("cluster: {}", cluster);
+
     match args.command {
-        
-        Commands::Tx { signature } => println!("Get Tx, {}",signature),
-        Commands::Account { pubkey } => println!("Get Account {}", pubkey),
-        _ => {},
+        Commands::Tx { signature } => {
+            println!("Get Tx: {}", signature);
+        }
+        Commands::Account { pubkey } => {
+            println!("Get Account: {}", pubkey);
+        }
     }
-    
-    
-    
 }
 
 
